@@ -1,15 +1,20 @@
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class Episode {
-    private final String name;
-    private final List<Scene> scenes;
 
-    public Episode(String name, List<Scene> scenes) {
-        this.name = name;
-        this.scenes = scenes;
+    @JacksonXmlProperty(localName = "Foo")
+    @JacksonXmlElementWrapper(useWrapping = false)
+    private final List<SpeechAndStage> body = new ArrayList<>();
+
+    public void addText(SpeechAndStage toAdd){
+        this.body.add(toAdd);
     }
 
-    public String getName() {
-        return name;
+    public List<SpeechAndStage> getBody() {
+        return body;
     }
 }

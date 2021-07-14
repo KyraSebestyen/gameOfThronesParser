@@ -1,24 +1,20 @@
-import java.util.List;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlText;
 
-public class Description {
+public class Description implements SpeechAndStage {
 
-    private final List<Person> persons;
+    @JacksonXmlText
     private final String description;
 
-    public Description(List<Person> persons, String description) {
-        this.persons = persons;
+    public Description(String description) {
         this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        if((persons == null) || (persons.isEmpty())){
-            sb.append("Description without persons");
-        } else {
-            sb.append("Description with: ");
-            persons.forEach(person -> sb.append(person).append(", "));
-        }
-        return sb.toString();
+        return description;
     }
 }

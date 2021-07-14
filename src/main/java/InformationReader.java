@@ -3,8 +3,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,28 +13,29 @@ public class InformationReader {
         this.fileName = fileName;
     }
 
-    public void read() throws IOException, URISyntaxException {
-
-
+    public Episode read() throws IOException, URISyntaxException {
         URL resource = this.getClass().getResource(fileName);
         Path path = Paths.get(resource.toURI());
         File file = new File(String.valueOf(path));
         FileReader fileReader = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
         String line;
+        Episode episode = new Episode();
         while ((line = bufferedReader.readLine()) != null) {
             if (line.equals("\r\n")) {
                 continue;
             }
             if (matchSpokenText(line) != null) {
                 SpokenText spokenText = matchSpokenText(line);
+                episode.addText(spokenText);
                 System.out.println(spokenText);
-            }
-            if (matchDescription(line) != null) {
+            } else if (matchDescription(line) != null) {
                 Description description = matchDescription(line);
+                episode.addText(description);
                 System.out.println(description);
             }
         }
+        return episode;
     }
 
     public SpokenText matchSpokenText(String line) {
@@ -72,16 +71,10 @@ public class InformationReader {
     }
 
     public Description matchDescription(String line) {
-        String patternDescription = "\\[.*]";
-        if (line.matches(patternDescription)) {
-            List<Person> persons = new ArrayList<>();
-            Matcher descriptionMatcher = Pattern.compile("([A-Z]{2,}( [A-Z]{2,})?)").matcher(line);
-            while (descriptionMatcher.find()) {
-                String name = descriptionMatcher.group(0);
-                persons.add(new Person(name));
-                return new Description(persons, line);
-            }
-            return new Description(null, line);
+        String patternDescription = "\\[(.*)]";
+        Matcher descriptionMatcher = Pattern.compile(patternDescription).matcher(line);
+        if (descriptionMatcher.matches()) {
+            return new Description(descriptionMatcher.group(1));
         }
         return null;
     }
